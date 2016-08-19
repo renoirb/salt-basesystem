@@ -1,13 +1,46 @@
 # Managed by Salt Stack
-# {{ source }}
 
-alias webapps='sudo -i su webapps'
+alias webapps='sudo -HE su webapps -l'
 alias besu='sudo -HE bash -l'
 alias scr='screen -dd -R'
 
 alias lazy_netstat='netstat -tulpn'
 alias lazy_gentoken='openssl rand -base64 32'
+
 alias lazy_git_shortlog='git shortlog -sn'
+
+lazy_git_changed() {
+  if [[ -z $1 ]]; then
+    before="HEAD~1"
+  else
+    if [ $1 -eq $1 ]; then
+      before="HEAD~${1}"
+    else
+      before="${1}"
+    fi
+  fi
+  echo "git log $before..HEAD --stat --pretty=short --graph";
+  read -n1 -r -p "Press any key to continue..." key;
+  git log $before..HEAD --stat --pretty=short --graph
+}
+
+lazy_git_changes() {
+  if [[ -z $1 ]]; then
+    before="HEAD~1"
+  else
+    if [ $1 -eq $1 ]; then
+      before="HEAD~${1}"
+    else
+      before="${1}"
+    fi
+  fi
+  echo "git log $before..HEAD -p --pretty=format:\"%h - %an, %ar : %s\"";
+  read -n1 -r -p "Press any key to continue..." key;
+  git log $before..HEAD -p --pretty=format:"%h - %an, %ar : %s"
+}
+
+## More lazy_ shortcuts, see others at <https://github.com/renoirb/salt-basesystem/blob/master/basesystem/files/lazy_aliases.sh>
+alias lazy_connections='sudo ss -lnp'
 
 lazy_mem () {
   ps -ylC "$@" --sort:rss | awk '!/RSS/ { s+=$8 } END { printf "%s\n", "Total memory used:"; printf "%dM\n", s/1024 }'
