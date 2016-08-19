@@ -39,6 +39,15 @@ lazy_git_changes() {
   git log $before..HEAD -p --pretty=format:"%h - %an, %ar : %s"
 }
 
+lazy_git_phplint() {
+  if [[ $1 ]]; then
+    against="${1}"
+  else
+    against="HEAD"
+  fi
+  git diff-tree --no-commit-id --name-only --ignore-space-at-eol --pretty=oneline --abbrev-commit -r ${against} | grep 'php$' | xargs -n1 php -l
+}
+
 ## More lazy_ shortcuts, see others at <https://github.com/renoirb/salt-basesystem/blob/master/basesystem/files/lazy_aliases.sh>
 alias lazy_connections='sudo ss -lnp'
 
@@ -81,16 +90,6 @@ lazy_git_search_file() {
 lazy_git_phplint_changed() {
   git status -s | grep 'php$' | awk '{print $2}' | xargs -n1 php -l
 }
-
-lazy_git_phplint() {
-  if [[ $1 ]]; then
-    against="${1}"
-  else
-    against="HEAD"
-  fi
-  git diff-tree --no-commit-id --name-only --ignore-space-at-eol --pretty=oneline --abbrev-commit -r ${against} | grep 'php$' | xargs -n1 php -l
-}
-
 
 # ref: http://hardenubuntu.com/disable-services
 lazy_procs() {
